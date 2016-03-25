@@ -1,6 +1,6 @@
 {
   "name": "nl-afas-cordova-plugin-klingonize",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Klingonize a face",
   "cordova": {
     "id": "nl-afas-cordova-plugin-klingonize",
