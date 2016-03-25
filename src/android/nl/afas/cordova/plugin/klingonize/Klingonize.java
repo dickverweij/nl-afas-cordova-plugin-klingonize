@@ -51,6 +51,18 @@ import nl.afas.pocket2.R;
 
 public class Klingonize extends CordovaPlugin {
 
+	boolean isGrayScalePixel(int pixel){
+		int alpha = (pixel & 0xFF000000) >> 24;
+		int red   = (pixel & 0x00FF0000) >> 16;
+		int green = (pixel & 0x0000FF00) >> 8;
+		int blue  = (pixel & 0x000000FF);
+
+		if( red == green && green == blue ) return true;
+		else return false;
+
+	}
+
+
     @Override
     public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         String result = null;
@@ -80,24 +92,58 @@ public class Klingonize extends CordovaPlugin {
 					Face face = faces.valueAt(0);
 
 					if (face.getLandmarks().size()>5) {
-						Bitmap bm = BitmapFactory.decodeResource(this.cordova.getActivity().getResources(), R.drawable.klingonface);
+
 
 						Bitmap bmOverlay = Bitmap.createBitmap(decodedByte.getWidth(), decodedByte.getHeight(), decodedByte.getConfig());
+
+						boolean isGrayscaleImage = true;  // assume it is grayscale until proven otherwise
+
+						for(int i = 0; i < decodedByte.getWidth(); i++){
+							for(int j = 0; j < decodedByte.getHeight(); j++){
+								int currPixel = decodedByte.getPixel(i, j);
+
+								if( false == isGrayScalePixel(currPixel) ){
+									isGrayscaleImage = false;
+									break;
+								}
+							}
+						}
+
+						Bitmap bm = BitmapFactory.decodeResource(this.cordova.getActivity().getResources(), isGrayscaleImage ? R.drawable.klingonfacebw: R.drawable.klingonface);
 						Rect srcRect = new Rect(0, 0, bm.getWidth(), bm.getHeight());
 
-						Rect faceRect = new Rect((int)face.getPosition().x,(int)face.getPosition().y,(int)(face.getPosition().x + face.getWidth()), (int)(face.getPosition().y + face.getHeight()));
 
-						faceRect.inset((int)(face.getLandmarks().get(Landmark.LEFT_EYE).getPosition().x - face.getPosition().x) ,(int)(face.getLandmarks().get(Landmark.LEFT_EYE).getPosition().y - face.getPosition().y));
+						float dx = 50;
+						float dy = 50;
+						float dy2 = 200;
+						for (Landmark landmark : face.getLandmarks()){
+							switch (landmark.getType()){
+								case Landmark.RIGHT_EYE:
+									dx = (landmark.getPosition().x - face.getPosition().x) * 0.6f;
+									dy= (landmark.getPosition().y - face.getPosition().y) * 0.9f;
+									dy2 = face.getPosition().y + face.getHeight()+ dy*0.5f;
+									break;
+								case Landmark.BOTTOM_MOUTH:
+									dy2= landmark.getPosition().y * 1.1f;
+									break;
+							}
+						}
 
-						double sx = (double) faceRect.width() / 163.0;
-						double sy = (double) faceRect.height() / 183.0;
-						double ssx = sx * 552.0;
-						double ssy = sy * 634.0;
 
-						double ox = (double) faceRect.left - ssx;
-						double oy = (double) faceRect.top - ssy;
 
-						Rect destRect = new Rect((int) ox, (int) oy, (int) (ox + (double) bm.getWidth() * sx), (int) (oy+ (double) bm.getHeight() * sy));
+						Rect faceRect = new Rect((int)(face.getPosition().x + dx),(int)(face.getPosition().y + dy),(int)(face.getPosition().x + face.getWidth()-dx), (int)dy2);
+
+
+
+						float sx = faceRect.width() / 163.0f;
+						float sy = faceRect.height() / 183.0f;
+						float ssx = sx * 552.0f;
+						float ssy = sy * 634.0f;
+
+						float ox = faceRect.left - ssx;
+						float oy = faceRect.top - ssy;
+
+						Rect destRect = new Rect((int) ox, (int) oy, (int) (ox + (float) bm.getWidth() * sx), (int) (oy+ (float) bm.getHeight() * sy));
 
 						Canvas canvas = new Canvas(bmOverlay);
 						canvas.drawBitmap(decodedByte, new Matrix(), null);
