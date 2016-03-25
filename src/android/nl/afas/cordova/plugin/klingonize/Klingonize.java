@@ -32,13 +32,18 @@ import org.json.JSONException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
+
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.Base64;
 import android.util.SparseArray;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.Face;
+import com.google.android.gms.vision.face.Landmark;
 
 import java.io.ByteArrayOutputStream;
 
@@ -60,6 +65,7 @@ public class Klingonize extends CordovaPlugin {
 			FaceDetector detector = new FaceDetector.Builder( this.cordova.getActivity().getApplicationContext())
 					.setTrackingEnabled(false)
 					.setLandmarkType(FaceDetector.ALL_LANDMARKS)
+					.setProminentFaceOnly(true)
 					.setMode(FaceDetector.FAST_MODE)
 					.build();
 
@@ -73,17 +79,36 @@ public class Klingonize extends CordovaPlugin {
 				if (faces.size() == 1){
 					Face face = faces.valueAt(0);
 
-					Bitmap bm = BitmapFactory.decodeResource(this.cordova.getActivity().getResources(), R.drawable.klingonface);
+					if (face.getLandmarks().size()>5) {
+						Bitmap bm = BitmapFactory.decodeResource(this.cordova.getActivity().getResources(), R.drawable.klingonface);
 
-					Bitmap bmOverlay = Bitmap.createBitmap(decodedByte.getWidth(), decodedByte.getHeight(), decodedByte.getConfig());
-					Canvas canvas = new Canvas(bmOverlay);
-					canvas.drawBitmap(decodedByte, new Matrix(), null);
-					canvas.drawBitmap(bm, new Matrix(), null);
+						Bitmap bmOverlay = Bitmap.createBitmap(decodedByte.getWidth(), decodedByte.getHeight(), decodedByte.getConfig());
+						Rect srcRect = new Rect(0, 0, bm.getWidth(), bm.getHeight());
 
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					bmOverlay.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-					byte[] b = baos.toByteArray();
-					result = Base64.encodeToString(b,Base64.DEFAULT);
+						Rect faceRect = new Rect((int)face.getPosition().x,(int)face.getPosition().y,(int)(face.getPosition().x + face.getWidth()), (int)(face.getPosition().y + face.getHeight()));
+
+						faceRect.inset((int)(face.getLandmarks().get(Landmark.LEFT_EYE).getPosition().x - face.getPosition().x) ,(int)(face.getLandmarks().get(Landmark.LEFT_EYE).getPosition().y - face.getPosition().y));
+
+						double sx = (double) faceRect.width() / 163.0;
+						double sy = (double) faceRect.height() / 183.0;
+						double ssx = sx * 552.0;
+						double ssy = sy * 634.0;
+
+						double ox = (double) faceRect.left - ssx;
+						double oy = (double) faceRect.top - ssy;
+
+						Rect destRect = new Rect((int) ox, (int) oy, (int) (ox + (double) bm.getWidth() * sx), (int) (oy+ (double) bm.getHeight() * sy));
+
+						Canvas canvas = new Canvas(bmOverlay);
+						canvas.drawBitmap(decodedByte, new Matrix(), null);
+
+						canvas.drawBitmap(bm, srcRect, destRect, null);
+
+						ByteArrayOutputStream baos = new ByteArrayOutputStream();
+						bmOverlay.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+						byte[] b = baos.toByteArray();
+						result = Base64.encodeToString(b, Base64.DEFAULT);
+					}
 				}
 			}
 
