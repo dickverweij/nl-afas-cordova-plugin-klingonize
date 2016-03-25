@@ -1,0 +1,34 @@
+{
+  "name": "nl-afas-cordova-plugin-klingonize",
+  "version": "0.0.1",
+  "description": "Klingonize a face",
+  "cordova": {
+    "id": "nl-afas-cordova-plugin-klingonize",
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dickverweij/nl-afas-cordova-plugin-klingonize.git"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-ios",
+    "klingon",
+    "image"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "author": "Dick Verweij",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dickverweij/nl-afas-cordova-plugin-klingonize/issues"
+  },
+  "homepage": "https://github.com/dickverweij/nl-afas-cordova-plugin-klingonize#readme"
+}

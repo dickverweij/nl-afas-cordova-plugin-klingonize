@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="nl-afas-cordova-plugin-klingonize" version="0.0.1">
+
+  <name>klingonize</name>
+  <description>Klingonize a face</description>
+  <license>MIT</license>
+
+  <engines>
+    <engine name="cordova" version=">=3.0.0" />
+  </engines>
+
+  <js-module src="www/plugins.Klingonize.js" name="Klingonize">
+    <clobbers target="cordova.plugins.Klingonize" />
+  </js-module>
+
+  <!-- Android -->
+  <platform name="android">
+    <source-file src="src/android/nl/afas/cordova/plugin/klingonize/Klingonize.java" target-dir="src/nl/afas/cordova/plugin/klingonize" />
+    <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="Klingonize">
+        <param name="android-package" value="nl.afas.cordova.plugin.klingonize.Klingonize" />
+      </feature>
+    </config-file>
+    <resource-file src="src/resources/klingonface.png" target-dir="src/nl/afas/cordova/plugin/klingonize" />
+    <resource-file src="src/resources/klingonfaceBW.png" target-dir="src/nl/afas/cordova/plugin/klingonize" />
+  </platform>
+
+  <!-- iOS -->
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="Klingonize">
+        <param name="ios-package" value="Klingonize" />
+      </feature>
+    </config-file>
+    <source-file src="src/ios/Klingonize.m" />
+    <header-file src="src/ios/Klingonize.h" />
+    <resource-file src="src/resources/klingonface.png" />
+    <resource-file src="src/resources/klingonfaceBW.png" />
+
+    <framework src="CoreImage.framework" />
+    <framework src="QuartzCore.framework" />
+  </platform>
+
+
+</plugin>

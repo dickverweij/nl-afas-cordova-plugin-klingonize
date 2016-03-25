@@ -1,29 +1,7 @@
-Klingonize a face for Cordova
-==========================
-This plugin will apply klingon face features to a image of a face. (detects face)
-
-Requirements
--------------
-- Android 4.3 or higher / iOS 6 or higher
-- Cordova 3.0 or higher
-
-    Installation
--------------
-    cordova plugin add nl-afas-cordova-plugin-klingonize
-
-Usage
-------
-    
-
-    cordova.plugins.Klingonize.klingonize(mimetype, imageBase64).then(function (resultImageBase64) {});
-
-
-LICENSE
---------
+/*
 The MIT License (MIT)
 
-Copyright (c) 2015 dickydick1969@hotmail.com Dick Verweij AFAS Software BV - d.verweij@afas.nl
-
+Copyright (c) 2015 Dick Verweij dickydick1969@hotmail.com, d.verweij@afas.nl
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -41,3 +19,15 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+#import <Cordova/CDV.h>
+
+
+@interface Klingonize : CDVPlugin{
+  
+}
+
+- (void) klingonize: (CDVInvokedUrlCommand*)command;
+
+@end
