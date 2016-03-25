@@ -21,8 +21,14 @@
         <param name="android-package" value="nl.afas.cordova.plugin.klingonize.Klingonize" />
       </feature>
     </config-file>
-    <resource-file src="src/resources/klingonface.png" target="res/images" />
-    <resource-file src="src/resources/klingonfaceBW.png" target="res/images" />
+    <resource-file src="src/resources/klingonface.png" target="res/drawable-port-xxxhdpi/klingonface.png" />
+    <resource-file src="src/resources/klingonfaceBW.png" target="res/drawable-port-xxxhdpi/klingonfacebw.png" />
+
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+      <meta-data android:name="com.google.android.gms.vision.DEPENDENCIES" android:value="face"/>
+    </config-file>
+    
+    <framework src="com.google.android.gms:play-services-vision:8.1.0" />    
   </platform>
 
   <!-- iOS -->

@@ -26,24 +26,69 @@ import org.apache.cordova.PluginResult;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
-import org.json.JSONException;
 import org.json.JSONArray;
+import org.json.JSONException;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.util.Base64;
+import android.util.SparseArray;
 
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.face.FaceDetector;
+import com.google.android.gms.vision.face.Face;
+
+import java.io.ByteArrayOutputStream;
+
+import nl.afas.pocket2.R;
 
 public class Klingonize extends CordovaPlugin {
 
     @Override
     public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
-        String result;
+        String result = null;
 
-		if (args.length == 2 && args[1].length > 0) {
+		if (args.length() == 2 && args.getString(1).length() > 0) {
 			String mimetype = args.getString(0);
 			String imageBase64 = args.getString(1);
 
+			byte[] decodedString = Base64.decode(imageBase64, Base64.DEFAULT);
+			Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+			FaceDetector detector = new FaceDetector.Builder( this.cordova.getActivity().getApplicationContext())
+					.setTrackingEnabled(false)
+					.setLandmarkType(FaceDetector.ALL_LANDMARKS)
+					.setMode(FaceDetector.FAST_MODE)
+					.build();
+
+			if (!detector.isOperational()) {
+				//Handle contingency
+			} else {
+				Frame frame = new Frame.Builder().setBitmap(decodedByte).build();
+				SparseArray<Face> faces = detector.detect(frame);
+				detector.release();
+
+				if (faces.size() == 1){
+					Face face = faces.valueAt(0);
+
+					Bitmap bm = BitmapFactory.decodeResource(this.cordova.getActivity().getResources(), R.drawable.klingonface);
+
+					Bitmap bmOverlay = Bitmap.createBitmap(decodedByte.getWidth(), decodedByte.getHeight(), decodedByte.getConfig());
+					Canvas canvas = new Canvas(bmOverlay);
+					canvas.drawBitmap(decodedByte, new Matrix(), null);
+					canvas.drawBitmap(bm, new Matrix(), null);
+
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					bmOverlay.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+					byte[] b = baos.toByteArray();
+					result = Base64.encodeToString(b,Base64.DEFAULT);
+				}
+			}
 
 		}
-	
+
 		PluginResult pluginResult;
 
 		if (result != null) {
