@@ -21,8 +21,8 @@
         <param name="android-package" value="nl.afas.cordova.plugin.klingonize.Klingonize" />
       </feature>
     </config-file>
-    <resource-file src="src/resources/klingonface.png" target-dir="src/nl/afas/cordova/plugin/klingonize" />
-    <resource-file src="src/resources/klingonfaceBW.png" target-dir="src/nl/afas/cordova/plugin/klingonize" />
+    <resource-file src="src/resources/klingonface.png" target="res/images" />
+    <resource-file src="src/resources/klingonfaceBW.png" target="res/images" />
   </platform>
 
   <!-- iOS -->
